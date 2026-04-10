@@ -6,11 +6,14 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
 
+  // ✅ Your LIVE backend URL
+  const API = "https://task-mangerss.onrender.com";
+
   const fetchTasks = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/tasks");
+      const res = await axios.get(`${API}/tasks`);
       setTasks(res.data);
-    } catch {
+    } catch (err) {
       alert("Error fetching tasks");
     }
   };
@@ -23,7 +26,7 @@ function App() {
     try {
       if (!title) return alert("Enter task");
 
-      await axios.post("http://localhost:5000/tasks", { title });
+      await axios.post(`${API}/tasks`, { title });
       setTitle("");
       fetchTasks();
     } catch {
@@ -31,29 +34,38 @@ function App() {
     }
   };
 
-  // ✅ FIXED
   const toggleTask = async (task) => {
-    await axios.patch(`http://localhost:5000/tasks/${task._id}`, {
-      completed: !task.completed,
-    });
-    fetchTasks();
+    try {
+      await axios.patch(`${API}/tasks/${task._id}`, {
+        completed: !task.completed,
+      });
+      fetchTasks();
+    } catch {
+      alert("Error updating task");
+    }
   };
 
-  // ✅ FIXED
   const updateTask = async (id) => {
     const newTitle = prompt("Enter new task");
     if (!newTitle) return;
 
-    await axios.patch(`http://localhost:5000/tasks/${id}`, {
-      title: newTitle,
-    });
-    fetchTasks();
+    try {
+      await axios.patch(`${API}/tasks/${id}`, {
+        title: newTitle,
+      });
+      fetchTasks();
+    } catch {
+      alert("Error updating task");
+    }
   };
 
-  // ✅ FIXED
   const deleteTask = async (id) => {
-    await axios.delete(`http://localhost:5000/tasks/${id}`);
-    fetchTasks();
+    try {
+      await axios.delete(`${API}/tasks/${id}`);
+      fetchTasks();
+    } catch {
+      alert("Error deleting task");
+    }
   };
 
   return (
@@ -77,13 +89,10 @@ function App() {
             </span>
 
             <div className="actions">
-              {/* ✅ FIXED */}
               <button onClick={() => updateTask(task._id)}>✏️</button>
 
-              {/* ✅ FIXED */}
               <button onClick={() => toggleTask(task)}>✅</button>
 
-              {/* ✅ FIXED */}
               <button
                 className="delete"
                 onClick={() => deleteTask(task._id)}
